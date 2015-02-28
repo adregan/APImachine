@@ -19,6 +19,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        self.set_status(201)
         return
 
     def patch(self):
@@ -27,6 +28,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        self.set_status(200)
         return
 
     def put(self):
@@ -35,13 +37,26 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        self.set_status(200)
         return
 
     def delete(self):
-        pass
+        # Clears the Content-Type header. Only displaying status code
+        self.clear_header("Content-Type")
+        # Set the status to 204, No Content
+        self.set_status(204)
+        return
 
     def options(self):
-        pass
+        # Joins the supported methods to return in the header
+        methods = ', '.join(self.SUPPORTED_METHODS)
+        # Sets the Access-Control-Allow-Methods header
+        self.set_header('Access-Control-Allow-Methods', methods)
+        # Clears the Content-Type header as we are only returning headers
+        self.clear_header("Content-Type")
+        # Set the status to 204, No Content
+        self.set_status(204)
+        return
 
     def _decode_body(self):
         err = body = None
