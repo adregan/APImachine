@@ -56,7 +56,13 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_status(200)
         return
 
-    def put(self):
+    def put(self, entry_id):
+        # TODO: Check for existing entry_id
+        existing = self._get_existing(entry_id)
+        # If the resource doesn't exist, create it using post
+        if not existing:
+            return self.post()
+
         err, body = self._decode_body()
         if err:
             self._handle_errors(err)
