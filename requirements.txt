@@ -1,0 +1,4 @@
+certifi==14.05.14
+mutagen==1.27
+requests==2.5.0
+tornado==4.1
