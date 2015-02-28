@@ -8,7 +8,21 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "Content-Type")
         self.set_header("Content-Type", "application/json")
 
-    def get(self):
+    def get(self, entry_id=None):
+        # If this is a GET request for a single resource
+        if entry_id:
+            # Check for existing 
+            existing = self._get_existing(entry_id)
+            # If there isn't an existing resource, return a 404
+            if not existing:
+                err = {
+                    "code": 404,
+                    "message": "Resource not found."
+                }
+                self._handle_errors(err)
+                return
+            # TODO: Convert existing to whatever the data var is
+
         self.set_status(200)
         self.write({"message": "Hello"})
         return
