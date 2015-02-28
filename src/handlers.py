@@ -1,4 +1,6 @@
 import tornado.web
+import tornado.escape
+
 
 class DefaultHandler(tornado.web.RequestHandler):
     def set_default_headers(self):
@@ -7,10 +9,17 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
 
     def get(self):
-        self.write("Hello")
+        self.set_status(200)
+        self.write({"message": "Hello"})
+        return
 
     def post(self):
-        pass
+        err, body = self._decode_body()
+        if err:
+            self._handle_errors(err)
+            return
+
+        return
 
     def patch(self):
         pass
@@ -23,3 +32,25 @@ class DefaultHandler(tornado.web.RequestHandler):
 
     def options(self):
         pass
+
+    def _decode_body(self):
+        err = body = None
+        if not self.request.body:
+            err = {
+                "code": 400,
+                "message": "JSON body is missing"
+            }
+        else:
+            try:
+                body = tornado.escape.json_decode(self.request.body)
+            except ValueError as error:
+                err = {
+                    "code": 400,
+                    "message": (
+                        "There is a problem with your JSON formatting: %s"
+                        % error
+                    )
+                }
+
+        return err, body
+
