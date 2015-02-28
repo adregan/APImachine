@@ -22,10 +22,20 @@ class DefaultHandler(tornado.web.RequestHandler):
         return
 
     def patch(self):
-        pass
+        err, body = self._decode_body()
+        if err:
+            self._handle_errors(err)
+            return
+
+        return
 
     def put(self):
-        pass
+        err, body = self._decode_body()
+        if err:
+            self._handle_errors(err)
+            return
+
+        return
 
     def delete(self):
         pass
