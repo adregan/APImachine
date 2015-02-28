@@ -68,10 +68,22 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+
         self.set_status(200)
         return
 
-    def delete(self):
+    def delete(self, entry_id):
+        # TODO: Check for existing entry_id
+        existing = self._get_existing(entry_id)
+        # If the resource doesn't exist, raise a 404
+        if not existing:
+            err = {
+                "code": 404,
+                "message": "Resource not found."
+            }
+            self._handle_errors(err)
+            return
+
         # Clears the Content-Type header. Only displaying status code
         self.clear_header("Content-Type")
         # Set the status to 204, No Content
@@ -88,6 +100,9 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Set the status to 204, No Content
         self.set_status(204)
         return
+
+    def _get_existing(self, entry_id):
+        return True
 
     def _decode_body(self):
         err = body = None
