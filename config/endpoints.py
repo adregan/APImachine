@@ -4,7 +4,12 @@
 """
 from src.handlers import *
 
+# endpoints = [
+#     {"route": "", "handler": DefaultHandler}
+# ]
 
+""" This is an example config/testing
+"""
 endpoints = [
-    {"route": "", "handler": ""}
+    {"route": "/", "handler": DefaultHandler}
 ]
