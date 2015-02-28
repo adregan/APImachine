@@ -36,7 +36,18 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_status(201)
         return
 
-    def patch(self):
+    def patch(self, entry_id):
+        # TODO: Check for existing entry_id
+        existing = self._get_existing(entry_id)
+        # If the resource doesn't exist, raise a 404
+        if not existing:
+            err = {
+                "code": 404,
+                "message": "Resource not found."
+            }
+            self._handle_errors(err)
+            return
+
         err, body = self._decode_body()
         if err:
             self._handle_errors(err)
