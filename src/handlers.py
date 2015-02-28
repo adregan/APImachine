@@ -54,3 +54,10 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         return err, body
 
+    def _handle_errors(self, err):
+        self.set_status(err.get('code', 500))
+        self.write(
+            {"error": err.get('message', {})}
+        )
+        self.finish()
+        return
