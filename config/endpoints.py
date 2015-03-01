@@ -18,6 +18,7 @@ endpoints = [
         "route": r"/tests/?$",
         "handler": DefaultHandler,
         "name": "tests",
+        "collection": "tests",
         "schema": TestSchema,
         "methods": ("GET", "OPTIONS", "POST"),
         "model": TestModel
