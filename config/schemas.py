@@ -9,3 +9,4 @@ class TestSchema(Schema):
         choices=["fruit", "vegetable", "meat"],
         default="fruit"
     )
+    modified = fields.LocalDateTime()
