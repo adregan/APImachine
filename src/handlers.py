@@ -51,6 +51,16 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        data, errors = self.schema().load(body)
+
+        if errors:
+            err = {
+                "code": 400,
+                "message": errors
+            }
+            self._handle_errors(err)
+            return
+
         # Set the status to 201
         self.set_status(201)
         return
