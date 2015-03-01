@@ -67,7 +67,12 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        # Update the database with the entry
+        # TODO: Write the database utility
+        database.insert(self.collection, data)
+
         # Set the status to 201
+        self.write(data)
         self.set_status(201)
         return
 
