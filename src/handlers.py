@@ -157,4 +157,11 @@ class HelloHandler(DefaultHandler):
     # TEMPORARY
     # TODO: Put some kind of documentation in at the root route
     def get(self):
-        self.write({"greeting": "Hello there.", "message": ["How", "are", "you", "?"]})
+        from collections import OrderedDict
+        hello = OrderedDict(
+            [
+                ("greeting", "Hello there."),
+                ("message", ["How", "are", "you", "?"])
+            ]
+        )
+        self.write(hello)
