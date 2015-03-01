@@ -31,7 +31,7 @@ class DefaultHandler(tornado.web.RequestHandler):
     def get(self, entry_id=None):
         # If this is a GET request for a single resource
         if entry_id:
-            # Check for existing 
+            # Check for existing
             existing = self._get_existing(entry_id)
             # If there isn't an existing resource, return a 404
             if not existing:
@@ -107,7 +107,6 @@ class DefaultHandler(tornado.web.RequestHandler):
         if err:
             self._handle_errors(err)
             return
-
 
         self.set_status(200)
         return
@@ -188,9 +187,11 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.finish()
         return
 
+
 class HelloHandler(DefaultHandler):
     # TEMPORARY
     # TODO: Put some kind of documentation in at the root route
+
     def get(self):
         from collections import OrderedDict
         hello = OrderedDict(
