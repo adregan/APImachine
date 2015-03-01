@@ -4,6 +4,7 @@
 """
 from src.handlers import *
 from config.schemas import *
+from config.models import *
 
 # endpoints = [
 #     {"route": "", "handler": DefaultHandler}
@@ -18,6 +19,7 @@ endpoints = [
         "handler": DefaultHandler,
         "name": "tests",
         "schema": TestSchema,
-        "methods": ("GET", "OPTIONS", "POST")
+        "methods": ("GET", "OPTIONS", "POST"),
+        "model": TestModel
     }
 ]
