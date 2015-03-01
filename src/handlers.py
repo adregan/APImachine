@@ -16,16 +16,22 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header("Content-Type", "application/json")
 
     def write_error(self, status_code, **kwargs):
-        message = "Error"
+        message = kwargs.get('message', 'There was an error')
+
         if status_code == 405:
-            message = "This method is not allowed on %s" % self.request.uri
+            message = (
+                "The method %s is not allowed for %s"
+                % (self.request.method, self.request.uri)
+            )
+        elif status_code == 404:
+            message = "Resource not found."
 
-        err = {
-            "code": status_code,
-            "message": message
-        }
-
-        self._handle_errors(err)
+        # Set the status code
+        self.set_status(status_code)
+        # Write the error
+        self.write({"errors": message})
+        # Terminate the request
+        self.finish()
         return
 
     def get(self, entry_id=None):
@@ -35,11 +41,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             existing = self._get_existing(entry_id)
             # If there isn't an existing resource, return a 404
             if not existing:
-                err = {
-                    "code": 404,
-                    "message": "Resource not found."
-                }
-                self._handle_errors(err)
+                self.write_error(404, message="Resource not found.")
                 return
             # TODO: Convert existing to whatever the data var is
 
@@ -51,7 +53,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         err, body = self._decode_body()
         # Handle the error, if found
         if err:
-            self._handle_errors(err)
+            self.write_error(err.get('code'), message=err.get('message'))
             return
         # Model the data, returns an model object
         modeled = self.model(body)
@@ -60,11 +62,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         data, errors = self.schema.dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
-            err = {
-                "code": 400,
-                "message": errors
-            }
-            self._handle_errors(err)
+            self.write_error(400, message=errors)
             return
 
         # Insert the entry into the database
@@ -81,16 +79,12 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            err = {
-                "code": 404,
-                "message": "Resource not found."
-            }
-            self._handle_errors(err)
+            self.write_error(404)
             return
 
         err, body = self._decode_body()
         if err:
-            self._handle_errors(err)
+            self.write_error(err.get('code'), message=err.get('message'))
             return
 
         self.set_status(200)
@@ -105,7 +99,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         err, body = self._decode_body()
         if err:
-            self._handle_errors(err)
+            self.write_error(err.get('code'), message=err.get('message'))
             return
 
         # Model the data, returns an model object
@@ -115,11 +109,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         data, errors = self.schema.dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
-            err = {
-                "code": 400,
-                "message": errors
-            }
-            self._handle_errors(err)
+            self.write_error(404, message=errors)
             return
 
         # Update the database with the entry
@@ -135,11 +125,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            err = {
-                "code": 404,
-                "message": "Resource not found."
-            }
-            self._handle_errors(err)
+            self.write_error(404)
             return
 
         # Clears the Content-Type header. Only displaying status code
@@ -189,23 +175,6 @@ class DefaultHandler(tornado.web.RequestHandler):
                 }
         # Return the err and/or the decoded body (one will be None)
         return err, body
-
-    def _handle_errors(self, err):
-        """ This is a simple little error handler that terminates the request
-            and displays the error. The err object should be formatted like so:
-
-            {"code": <int>, "message": <string>}
-        """
-        # Set the status code
-        self.set_status(err.get('code', 500))
-        # Write the error
-        self.write(
-            {"errors": err.get('message', "")}
-        )
-        # Terminate the request
-        self.finish()
-        return
-
 
 class HelloHandler(DefaultHandler):
     # TEMPORARY
