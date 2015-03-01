@@ -16,9 +16,15 @@ class App(Application):
 
 
     def _build_handlers(self):
-        handlers = [
-            url(r"%s?$" % endpoint.get('route'), endpoint.get('handler')) 
-            for endpoint in self.endpoints
-        ]
+        handlers = [self._build_url(endpoint) for endpoint in self.endpoints]
 
         return handlers
+
+    def _build_url(self, endpoint):
+        route = endpoint.get('route')
+        handler = endpoint.get('handler')
+        name = endpoint.get('name')
+        schema = endpoint.get('schema')
+        route_url = url(route, handler, {"schema": schema}, name=name)
+
+        return route_url
