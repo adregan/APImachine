@@ -50,9 +50,10 @@ class DefaultHandler(tornado.web.RequestHandler):
         if err:
             self._handle_errors(err)
             return
-
+        # Load the request body into the schema
         data, errors = self.schema().load(body)
 
+        # If there were any errors from the schema, return a 400 and the errors
         if errors:
             err = {
                 "code": 400,
