@@ -3,7 +3,7 @@
     use to construct the routes.
 """
 from src.handlers import *
-from schemas import *
+from config.schemas import *
 
 # endpoints = [
 #     {"route": "", "handler": DefaultHandler}
