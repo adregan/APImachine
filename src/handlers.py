@@ -4,7 +4,7 @@ import tornado.escape
 
 class DefaultHandler(tornado.web.RequestHandler):
     def initialize(self, collection, schema, methods):
-        self.schema = schema
+        self.schema = schema()
         self.SUPPORTED_METHODS = methods
 
     def set_default_headers(self):
@@ -51,7 +51,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
         # Load the request body into the schema
-        data, errors = self.schema().load(body)
+        data, errors = self.schema.load(body)
 
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
