@@ -24,7 +24,6 @@ class DefaultHandler(tornado.web.RequestHandler):
             # TODO: Convert existing to whatever the data var is
 
         self.set_status(200)
-        self.write({"message": "Hello"})
         return
 
     def post(self):
@@ -150,3 +149,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Terminate the request
         self.finish()
         return
+
+class HelloHandler(DefaultHandler):
+    def get(self):
+        self.write({"greeting": "Hello there.", "message": ["How", "are", "you", "?"]})

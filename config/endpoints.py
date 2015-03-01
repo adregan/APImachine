@@ -11,5 +11,5 @@ from src.handlers import *
 """ This is an example config/testing
 """
 endpoints = [
-    {"route": "/", "handler": DefaultHandler}
+    {"route": "/", "handler": HelloHandler}
 ]
