@@ -12,6 +12,19 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header("Access-Control-Allow-Headers", "Content-Type")
         self.set_header("Content-Type", "application/json")
 
+    def write_error(self, status_code, **kwargs):
+        message = "Error"
+        if status_code == 405:
+            message = "This method is not allowed on %s" % self.request.uri
+
+        err = {
+            "code": status_code,
+            "message": message
+        }
+
+        self._handle_errors(err)
+        return
+
     def get(self, entry_id=None):
         # If this is a GET request for a single resource
         if entry_id:
