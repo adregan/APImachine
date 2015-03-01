@@ -3,7 +3,9 @@ import tornado.escape
 
 
 class DefaultHandler(tornado.web.RequestHandler):
+
     def initialize(self, collection, schema, methods, model):
+        self.collection = collection
         self.schema = schema()
         self.SUPPORTED_METHODS = methods
         self.model = model
