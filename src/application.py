@@ -26,7 +26,8 @@ class App(Application):
         name = endpoint.get('name')
         kwargs = {
             "collection": endpoint.get('collection'),
-            "schema": endpoint.get('schema')
+            "schema": endpoint.get('schema'),
+            "methods": endpoint.get('methods')
         }
         route_url = url(route, handler, kwargs, name=name)
 

@@ -13,5 +13,11 @@ from config.schemas import *
 """
 endpoints = [
     {"route": r"/?$", "handler": HelloHandler, "name": "hello"},
-    {"route": r"/test/?$", "handler": DefaultHandler, "name": "test", "schema": TestSchema}
+    {
+        "route": r"/tests/?$",
+        "handler": DefaultHandler,
+        "name": "tests",
+        "schema": TestSchema,
+        "methods": ("GET", "OPTIONS", "POST")
+    }
 ]

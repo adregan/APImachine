@@ -3,8 +3,9 @@ import tornado.escape
 
 
 class DefaultHandler(tornado.web.RequestHandler):
-    def initialize(self, collection, schema):
+    def initialize(self, collection, schema, methods):
         self.schema = schema
+        self.SUPPORTED_METHODS = methods
 
     def set_default_headers(self):
         self.set_header("Access-Control-Allow-Origin", "*")
