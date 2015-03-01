@@ -53,9 +53,11 @@ class DefaultHandler(tornado.web.RequestHandler):
         if err:
             self._handle_errors(err)
             return
-        # Load the request body into the schema
-        data, errors = self.schema.load(body)
-
+        # Model the data, returns an model object
+        modeled = self.model(body)
+        # Load the request body into the schema,
+        # uses dump to serialize the object to a dictionary
+        data, errors = self.schema.dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
             err = {
