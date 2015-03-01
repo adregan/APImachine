@@ -67,7 +67,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
-        # Update the database with the entry
+        # Insert the entry into the database
         # TODO: Write the database utility
         database.insert(self.collection, data)
 
@@ -108,6 +108,25 @@ class DefaultHandler(tornado.web.RequestHandler):
             self._handle_errors(err)
             return
 
+        # Model the data, returns an model object
+        modeled = self.model(body)
+        # Load the request body into the schema,
+        # uses dump to serialize the object to a dictionary
+        data, errors = self.schema.dump(modeled)
+        # If there were any errors from the schema, return a 400 and the errors
+        if errors:
+            err = {
+                "code": 400,
+                "message": errors
+            }
+            self._handle_errors(err)
+            return
+
+        # Update the database with the entry
+        # TODO: Write the database utility
+        database.update(self.collection, data)
+
+        self.write(data)
         self.set_status(200)
         return
 
