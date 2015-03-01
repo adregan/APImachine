@@ -28,11 +28,14 @@ class DefaultHandler(tornado.web.RequestHandler):
         return
 
     def post(self):
+        # Decode the JSON body
         err, body = self._decode_body()
+        # Handle the error, if found
         if err:
             self._handle_errors(err)
             return
 
+        # Set the status to 201
         self.set_status(201)
         return
 
@@ -105,15 +108,22 @@ class DefaultHandler(tornado.web.RequestHandler):
         return True
 
     def _decode_body(self):
+        """ This method attempts to decode the request's JSON body.
+            If it cannot be found or is poorly formatted, returns an error.
+        """
+        # Set the variable to None
         err = body = None
+        # Check if the request body exists, return 400 if it doesn't
         if not self.request.body:
             err = {
                 "code": 400,
                 "message": "JSON body is missing"
             }
+        # The request body exists, try to decode it
         else:
             try:
                 body = tornado.escape.json_decode(self.request.body)
+            # If the request body cannot be decoded, return a 400 error
             except ValueError as error:
                 err = {
                     "code": 400,
@@ -122,13 +132,21 @@ class DefaultHandler(tornado.web.RequestHandler):
                         % error
                     )
                 }
-
+        # Return the err and/or the decoded body (one will be None)
         return err, body
 
     def _handle_errors(self, err):
+        """ This is a simple little error handler that terminates the request
+            and displays the error. The err object should be formatted like so:
+
+            {"code": <int>, "message": <string>}
+        """
+        # Set the status code
         self.set_status(err.get('code', 500))
+        # Write the error
         self.write(
             {"error": err.get('message', {})}
         )
+        # Terminate the request
         self.finish()
         return
