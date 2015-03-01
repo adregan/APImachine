@@ -12,5 +12,6 @@ from schemas import *
 """ This is an example config/testing
 """
 endpoints = [
-    {"route": r"/?$", "handler": HelloHandler, "name": "hello"}
+    {"route": r"/?$", "handler": HelloHandler, "name": "hello"},
+    {"route": r"/test/?$", "handler": DefaultHandler, "name": "test", "schema": TestSchema}
 ]
