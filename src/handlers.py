@@ -144,7 +144,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_status(err.get('code', 500))
         # Write the error
         self.write(
-            {"error": err.get('message', {})}
+            {"error": err.get('message', "")}
         )
         # Terminate the request
         self.finish()
