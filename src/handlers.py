@@ -124,7 +124,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         # Update the database with the entry
         # TODO: Write the database utility
-        database.update(self.collection, data)
+        database.update(self.collection, entry_id, data)
 
         self.write(data)
         self.set_status(200)
