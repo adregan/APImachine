@@ -3,7 +3,7 @@ import tornado.escape
 
 
 class DefaultHandler(tornado.web.RequestHandler):
-    def initialize(self, schema):
+    def initialize(self, collection, schema):
         self.schema = schema
 
     def set_default_headers(self):
