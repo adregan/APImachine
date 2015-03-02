@@ -78,7 +78,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         # Insert the entry into the database
         # TODO: Write the database utility
-        database.insert(self.collection, data)
+        # database.insert(self.collection, data)
 
         # Set the status to 201
         self.write(data)
@@ -125,7 +125,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         # Update the database with the entry
         # TODO: Write the database utility
-        database.update(self.collection, entry_id, data)
+        # database.update(self.collection, entry_id, data)
 
         self.write(data)
         self.set_status(200)
