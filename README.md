@@ -7,7 +7,7 @@ Trying to follow the [JSON API](http://jsonapi.org/) spec as closely as possible
 Uses Python3, Tornado, and Marshmallow
 
 ## Getting Started
-`pyenv venv`
+`pyvenv venv`
 
 `source venv/bin/activate`
 
