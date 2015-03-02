@@ -5,3 +5,12 @@ This is a simple little API server to have on hand for side projects. More of a 
 Trying to follow the [JSON API](http://jsonapi.org/) spec as closely as possible
 
 Uses Python3, Tornado, and Marshmallow
+
+## Getting Started
+`pyvenv venv`
+
+`source venv/bin/activate`
+
+`pip3 install -r requirements.txt`
+
+`python3 app.py`
