@@ -1,13 +1,17 @@
 import tornado.web
 import tornado.escape
+from src.json_api_utils import JSONAPI
 
 
 class DefaultHandler(tornado.web.RequestHandler):
 
     def initialize(self, collection, schema, methods, model):
         self.collection = collection
-        self.schema = schema()
-        self.SUPPORTED_METHODS = methods
+        self.schema = schema
+        if methods:
+            self.SUPPORTED_METHODS = methods
+        else:
+            self.SUPPORTED_METHODS = ("GET")
         self.model = model
 
     def set_default_headers(self):
