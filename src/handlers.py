@@ -70,7 +70,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         modeled = self.model(body)
         # Load the request body into the schema,
         # uses dump to serialize the object to a dictionary
-        data, errors = self.schema.dump(modeled)
+        data, errors = self.schema().dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
             self.write_error(400, message=errors)
@@ -117,7 +117,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         modeled = self.model(body)
         # Load the request body into the schema,
         # uses dump to serialize the object to a dictionary
-        data, errors = self.schema.dump(modeled)
+        data, errors = self.schema().dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
             self.write_error(404, message=errors)
