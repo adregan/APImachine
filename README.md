@@ -7,10 +7,10 @@ Trying to follow the [JSON API](http://jsonapi.org/) spec as closely as possible
 Uses Python3, Tornado, and Marshmallow
 
 ## Getting Started
-`pyvenv venv`
+`pyenv venv`
 
 `source venv/bin/activate`
 
-`pip3 install -r requirements.txt`
+`pip install -r requirements.txt`
 
-`python3 app.py`
+`python app.py`
