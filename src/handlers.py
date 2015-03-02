@@ -47,8 +47,15 @@ class DefaultHandler(tornado.web.RequestHandler):
             if not existing:
                 self.write_error(404, message="Resource not found.")
                 return
-            # TODO: Convert existing to whatever the data var is
+            # TODO: Convert existing to whatever the data var will be
 
+        # Instantiate the JSON API utility
+        api = JSONAPI(request=self.request)
+
+        links = api.build_links()
+        meta = api.build_meta()
+
+        self.write({"links": links, "data": [], "meta": meta})
         self.set_status(200)
         return
 
