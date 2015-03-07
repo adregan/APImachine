@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 
 class JSONAPI(object):
-    def __init__(self, request):
+    def __init__(self):
         pass
 
     def build_links(self, request_link):
