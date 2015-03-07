@@ -11,13 +11,13 @@ class DefaultHandler(tornado.web.RequestHandler):
         if methods:
             self.SUPPORTED_METHODS = methods
         else:
-            self.SUPPORTED_METHODS = ("GET")
+            self.SUPPORTED_METHODS = ('GET')
         self.model = model
 
     def set_default_headers(self):
-        self.set_header("Access-Control-Allow-Origin", "*")
-        self.set_header("Access-Control-Allow-Headers", "Content-Type")
-        self.set_header("Content-Type", "application/json")
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.set_header('Content-Type', 'application/json')
 
     def write_error(self, status_code, **kwargs):
         message = kwargs.get('message', 'There was an error')
@@ -28,12 +28,12 @@ class DefaultHandler(tornado.web.RequestHandler):
                 % (self.request.method, self.request.uri)
             )
         elif status_code == 404:
-            message = "Resource not found."
+            message = 'Resource not found.'
 
         # Set the status code
         self.set_status(status_code)
         # Write the error
-        self.write({"errors": message})
+        self.write({'errors': message})
         # Terminate the request
         self.finish()
         return
@@ -48,6 +48,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         return
 
+        return
 
     def get(self, entry_id=None):
         # If this is a GET request for a single resource
@@ -56,9 +57,15 @@ class DefaultHandler(tornado.web.RequestHandler):
             existing = self._get_existing(entry_id)
             # If there isn't an existing resource, return a 404
             if not existing:
-                self.write_error(404, message="Resource not found.")
+                self.write_error(404, message='Resource not found.')
                 return
             # TODO: Convert existing to whatever the data var will be
+
+        # Sets the request size to either the user defined limit
+        # or the default in settings.
+        request_size = limit or self.settings.get('default_request_size')
+
+        print('request size ', request_size)
 
         # TODO: return the total count from database
         # count = len(data)
@@ -75,7 +82,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         links = api.build_links(self.request_link)
         meta = api.build_meta()
 
-        self.write({"links": links, "data": [], "meta": meta})
+        self.write({'links': links, 'data': [], 'meta': meta})
         self.set_status(200)
         return
 
@@ -160,7 +167,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             return
 
         # Clears the Content-Type header. Only displaying status code
-        self.clear_header("Content-Type")
+        self.clear_header('Content-Type')
         # Set the status to 204, No Content
         self.set_status(204)
         return
@@ -171,7 +178,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Sets the Access-Control-Allow-Methods header
         self.set_header('Access-Control-Allow-Methods', methods)
         # Clears the Content-Type header as we are only returning headers
-        self.clear_header("Content-Type")
+        self.clear_header('Content-Type')
         # Set the status to 204, No Content
         self.set_status(204)
         return
@@ -180,16 +187,16 @@ class DefaultHandler(tornado.web.RequestHandler):
         return True
 
     def _decode_body(self):
-        """ This method attempts to decode the request's JSON body.
+        ''' This method attempts to decode the request's JSON body.
             If it cannot be found or is poorly formatted, returns an error.
-        """
+        '''
         # Set the variable to None
         err = body = None
         # Check if the request body exists, return 400 if it doesn't
         if not self.request.body:
             err = {
-                "code": 400,
-                "message": "JSON body is missing"
+                'code': 400,
+                'message': 'JSON body is missing'
             }
         # The request body exists, try to decode it
         else:
@@ -216,8 +223,8 @@ class HelloHandler(DefaultHandler):
         from collections import OrderedDict
         hello = OrderedDict(
             [
-                ("greeting", "Hello there."),
-                ("message", ["How", "are", "you", "?"])
+                ('greeting', 'Hello there.'),
+                ('message', ['How', 'are', 'you', '?'])
             ]
         )
         self.write(hello)

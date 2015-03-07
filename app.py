@@ -4,14 +4,14 @@ from src.application import App
 from src.handlers import DefaultHandler
 from config.endpoints import endpoints
 
-define("port", default=7777, help="server runs on this port", type=int)
+define('port', default=7777, help='server runs on this port', type=int)
 define(
-    "default_request_size",
+    'default_request_size',
     default=10,
-    help="The default request size",
+    help='The default request size',
     type=int
 )
-define("dev", default=False, help="sets the dev toggle", type=bool)
+define('dev', default=False, help='sets the dev toggle', type=bool)
 
 
 def main():
@@ -20,5 +20,5 @@ def main():
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

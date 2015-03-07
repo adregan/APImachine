@@ -9,8 +9,8 @@ class App(Application):
         settings = {
             'static_path': os.path.join(os.path.dirname(__file__), 'static'),
             'debug': options.dev,
-            "compress_response": True,
-            "default_request_size": options.default_request_size
+            'compress_response': True,
+            'default_request_size': options.default_request_size
         }
 
         Application.__init__(self, handlers, **settings)
@@ -26,10 +26,10 @@ class App(Application):
         handler = endpoint.get('handler')
         name = endpoint.get('name')
         kwargs = {
-            "collection": endpoint.get('collection'),
-            "schema": endpoint.get('schema'),
-            "methods": endpoint.get('methods'),
-            "model": endpoint.get('model')
+            'collection': endpoint.get('collection'),
+            'schema': endpoint.get('schema'),
+            'methods': endpoint.get('methods'),
+            'model': endpoint.get('model')
         }
         route_url = url(route, handler, kwargs, name=name)
 
