@@ -3,10 +3,11 @@
 '''
 
 from collections import OrderedDict
+from math import floor
 
 
 class JSONAPI(object):
-    def __init__(self, count=0, total_entries=0):
+    def __init__(self, count, total_entries):
         self.count = count
         self.total_entries = total_entries
 
