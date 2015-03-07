@@ -59,11 +59,25 @@ class DefaultHandler(tornado.web.RequestHandler):
             path=path
         )
 
-        return
+        self.request_args = args
 
         return
 
     def get(self, entry_id=None):
+
+        try:
+            # If there is a page declared in the args, pop it into page
+            page = self.request_args.pop('page')[0]
+        except KeyError:
+            # Otherwise, page is 1
+            page = 1
+        try:
+            # If there is a limit, pop the value into limit
+            limit = self.request_args.pop('limit')[0]
+        except KeyError:
+            # Otherwise, limit is None and we'll use default_request_size
+            limit = None
+
         # If this is a GET request for a single resource
         if entry_id:
             # Check for existing
@@ -92,7 +106,12 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Instantiate the JSON API utility
         api = JSONAPI()
 
-        links = api.build_links(self.request_link)
+        links = api.build_links(
+            request_link=self.request_link,
+            page=page,
+            limit=limit,
+            request_args=self.request_args,
+        )
         meta = api.build_meta()
 
         self.write({'links': links, 'data': [], 'meta': meta})
