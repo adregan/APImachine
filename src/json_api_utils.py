@@ -26,9 +26,6 @@ class JSONAPI(object):
         query_string = '&'.join(queries)
 
         # If there is a limit defined, add that to the query string
-        if limit:
-            query_string += '&limit={limit}'.format(limit=limit)
-
         # If there is a page defined, add that to the query string
         # Declares a first_page_link and prev_page_link as well
         first_page_link = prev_page_link = None
