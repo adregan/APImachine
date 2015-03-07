@@ -10,6 +10,7 @@ class App(Application):
             'static_path': os.path.join(os.path.dirname(__file__), 'static'),
             'debug': options.dev,
             "compress_response": True,
+            "default_request_size": options.default_request_size
         }
 
         Application.__init__(self, handlers, **settings)
