@@ -60,6 +60,15 @@ class DefaultHandler(tornado.web.RequestHandler):
                 return
             # TODO: Convert existing to whatever the data var will be
 
+        # TODO: return the total count from database
+        # count = len(data)
+        # total_entries = total
+
+        # DEV
+        count = 10
+        total_entries = 55
+        # DEV
+
         # Instantiate the JSON API utility
         api = JSONAPI()
 
