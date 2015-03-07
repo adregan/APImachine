@@ -104,7 +104,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # DEV
 
         # Instantiate the JSON API utility
-        api = JSONAPI()
+        api = JSONAPI(count=count, total_entries=total_entries)
 
         links = api.build_links(
             request_link=self.request_link,
