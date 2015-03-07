@@ -67,6 +67,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         return
 
     def get(self, entry_id=None):
+        # Sets an errors list to collect errors
+        errors = []
 
         try:
             # If there is a page declared in the args, pop it into page
@@ -79,7 +81,23 @@ class DefaultHandler(tornado.web.RequestHandler):
             limit = self.request_args.pop('limit')[0]
         except KeyError:
             # Otherwise, limit is None and we'll use default_request_size
-            limit = None
+            limit = 0
+
+        # Performs some type checking / coercion on page and limit
+        # If there are any problems, packages the errors and returns them
+        # I may allow these errors to slide and simply return the first page
+        # of results or the default amount of entries, but attach an error key
+        # on the top level.
+        try:
+            page = int(page)
+        except ValueError as error:
+            page = 1
+            errors.append('The page query must be an `integer`')
+        try:
+            limit = int(limit)
+        except ValueError as error:
+            limit = 0
+            errors.append('The limit query must be an `integer`')
 
         # If this is a GET request for a single resource
         if entry_id:
@@ -117,7 +135,11 @@ class DefaultHandler(tornado.web.RequestHandler):
         )
         meta = api.build_meta()
 
-        self.write({'links': links, 'data': [], 'meta': meta})
+        response = {'links': links, 'data': [], 'meta': meta}
+        if errors:
+            response['errors'] = errors
+
+        self.write(response)
         self.set_status(200)
         return
 
