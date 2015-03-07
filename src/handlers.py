@@ -113,8 +113,6 @@ class DefaultHandler(tornado.web.RequestHandler):
         # or the default in settings.
         request_size = limit or self.settings.get('default_request_size')
 
-        print('request size ', request_size)
-
         # TODO: return the total count from database
         # count = len(data)
         # total_entries = total
