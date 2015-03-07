@@ -38,6 +38,17 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.finish()
         return
 
+    def prepare(self):
+        # Set a copy of the request link
+        self.request_link = "%s://%s%s" % (
+            self.request.protocol,
+            self.request.host,
+            self.request.uri
+        )
+
+        return
+
+
     def get(self, entry_id=None):
         # If this is a GET request for a single resource
         if entry_id:
@@ -50,9 +61,9 @@ class DefaultHandler(tornado.web.RequestHandler):
             # TODO: Convert existing to whatever the data var will be
 
         # Instantiate the JSON API utility
-        api = JSONAPI(request=self.request)
+        api = JSONAPI()
 
-        links = api.build_links()
+        links = api.build_links(self.request_link)
         meta = api.build_meta()
 
         self.write({"links": links, "data": [], "meta": meta})

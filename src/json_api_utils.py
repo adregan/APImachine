@@ -7,20 +7,14 @@ from collections import OrderedDict
 
 class JSONAPI(object):
     def __init__(self, request):
-        self.request = request
+        pass
 
-    def build_links(self):
+    def build_links(self, request_link):
         """ Public method that constructs the links object:
             http://jsonapi.org/format/#document-structure-top-level-links
             mostly containing pagination information:
             http://jsonapi.org/format/#fetching-pagination
         """
-
-        request_link = "%s://%s%s" % (
-            self.request.protocol,
-            self.request.host,
-            self.request.uri
-        )
 
         links = OrderedDict()
 
