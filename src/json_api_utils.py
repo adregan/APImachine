@@ -35,47 +35,70 @@ class JSONAPI(object):
         # If there is a page defined, add that to the query string
         # Declares a first_page_link and prev_page_link as well
         self_link = first_page_link = prev_page_link = None
+        # Constructs these links when the page is greater than 1
         if page > 1:
-            # Constructs the self link
+            # If there is a query string, attach it to the links, append page
             if query_string:
+                # The current page
                 self_link = '{link}?{queries}&page={page}'.format(
                     link=request_link,
                     queries=query_string,
                     page=page
                 )
+                # Constructs the first_page_link (removes the page query)
+                first_page_link = '{link}?{queries}'.format(
+                    link=request_link,
+                    queries=query_string
+                )
+                # Constructs the prev_page_link (subtracts 1 from the page)
+                prev_page_link = '{link}?{queries}&page={page}'.format(
+                    link=request_link,
+                    queries=query_string,
+                    page=page-1
+                )
+            # Otherwise, just attach append the page query
             else:
                 self_link = '{link}?page={page}'.format(
                     link=request_link,
                     page=page
                 )
-            # Constructs the first_page_link (removes the page query)
-            first_page_link = '{link}?{queries}'.format(
-                link=request_link,
-                queries=query_string
-            )
-            # Constructs the prev_page_link (subtracts 1 from the page)
-            prev_page_link = '{link}?{queries}&page={page}'.format(
-                link=request_link,
-                queries=query_string,
-                page=page-1
-            )
+                # First page is simply the request link
+                first_page_link = request_link
+                # Constructs the prev_page_link (subtracts 1 from the page)
+                prev_page_link = '{link}?page={page}'.format(
+                    link=request_link,
+                    page=page-1
+                )
 
-
+        # Works on constructing the last page and the next page
         last_page_link = next_page_link = None
         if self.total_entries > request_size:
             last_page = floor((self.total_entries / request_size) + 1)
+            # Restricts last and next when you are on the last page
             if page != last_page and not (page > last_page):
-                last_page_link = '{link}?{queries}&page={page}'.format(
-                    link=request_link,
-                    queries=query_string,
-                    page=last_page
-                )
-                next_page_link = '{link}?{queries}&page={page}'.format(
-                    link=request_link,
-                    queries=query_string,
-                    page=page+1
-                )
-
+                # If there is a query string, attach it to the links, append page
+                if query_string:
+                    last_page_link = '{link}?{queries}&page={page}'.format(
+                        link=request_link,
+                        queries=query_string,
+                        page=last_page
+                    )
+                    # Next is this page + 1
+                    next_page_link = '{link}?{queries}&page={page}'.format(
+                        link=request_link,
+                        queries=query_string,
+                        page=page+1
+                    )
+                else:
+                    last_page_link = '{link}?page={page}'.format(
+                        link=request_link,
+                        page=last_page
+                    )
+                    # Next is this page + 1
+                    next_page_link = '{link}?page={page}'.format(
+                        link=request_link,
+                        page=page+1
+                    )
 
         # Creates an ordered dict for the links
         links = OrderedDict()

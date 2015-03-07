@@ -90,10 +90,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             limit = 0
 
         # Performs some type checking / coercion on page and limit
-        # If there are any problems, packages the errors and returns them
-        # I may allow these errors to slide and simply return the first page
-        # of results or the default amount of entries, but attach an error key
-        # on the top level.
+        # If there are any problems returns the errors
         try:
             page = int(page)
         except ValueError as error:
