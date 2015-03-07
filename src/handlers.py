@@ -24,8 +24,8 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         if status_code == 405:
             message = (
-                "The method %s is not allowed for %s"
-                % (self.request.method, self.request.uri)
+                'The method {method} is not allowed for {path}'
+                .format(method=self.request.method, path=self.request.uri)
             )
         elif status_code == 404:
             message = 'Resource not found.'
@@ -40,10 +40,10 @@ class DefaultHandler(tornado.web.RequestHandler):
 
     def prepare(self):
         # Set a copy of the request link
-        self.request_link = "%s://%s%s" % (
-            self.request.protocol,
-            self.request.host,
-            self.request.uri
+        self.request_link = '{protocol}://{host}{path}'.format(
+            protocol=self.request.protocol,
+            host=self.request.host,
+            path=path
         )
 
         return
@@ -205,10 +205,10 @@ class DefaultHandler(tornado.web.RequestHandler):
             # If the request body cannot be decoded, return a 400 error
             except ValueError as error:
                 err = {
-                    "code": 400,
-                    "message": (
-                        "There is a problem with your JSON formatting: %s"
-                        % error
+                    'code': 400,
+                    'message': (
+                        'There is a problem with your JSON formatting: {error}'
+                        .format(error=error)
                     )
                 }
         # Return the err and/or the decoded body (one will be None)
