@@ -7,7 +7,13 @@ from math import floor
 
 
 class JSONAPI(object):
-    def __init__(self, count, total_entries):
+    def __init__(self, copyright=None, authors=None):
+        self.copyright = copyright
+        self.authors = authors
+        self.count = None
+        self.total_entries = None
+
+    def update_count_total(self, count, total_entries):
         self.count = count
         self.total_entries = total_entries
 
