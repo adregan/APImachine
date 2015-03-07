@@ -92,7 +92,19 @@ class JSONAPI(object):
 
     def build_meta(self):
         meta = OrderedDict()
-        meta['copyright'] = 'Copyright 2015 Andrew Duncan Regan'
-        meta['authors'] = ['Duncan Regan']
+        if self.count:
+            meta['count'] = self.count
+        if self.total_entries:
+            meta['total'] = self.total_entries
+        if self.copyright:
+            meta['copyright'] = self.copyright
+        if self.authors:
+            meta['authors'] = self.authors
+
+        self._clear_count_total()
 
         return meta
+
+    def _clear_count_total(self):
+        self.count = None
+        self.total_entries = None
