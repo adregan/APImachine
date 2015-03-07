@@ -20,6 +20,9 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
 
     def write_error(self, status_code, **kwargs):
+        api = JSONAPI(count=0, total_entries=0)
+        meta = api.build_meta()
+
         message = kwargs.get('message', 'There was an error')
 
         if status_code == 405:
@@ -33,7 +36,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Set the status code
         self.set_status(status_code)
         # Write the error
-        self.write({'errors': message})
+        self.write({'errors': message, 'meta': meta})
         # Terminate the request
         self.finish()
         return
