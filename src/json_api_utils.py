@@ -11,7 +11,7 @@ class JSONAPI(object):
         self.count = count
         self.total_entries = total_entries
 
-    def build_links(self, request_link, page, limit, request_args={}):
+    def build_links(self, request_link, page, request_size, request_args={}):
         ''' Public method that constructs the links object:
             http://jsonapi.org/format/#document-structure-top-level-links
             mostly containing pagination information:

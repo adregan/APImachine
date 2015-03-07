@@ -78,7 +78,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             page = 1
         try:
             # If there is a limit, pop the value into limit
-            limit = self.request_args.pop('limit')[0]
+            limit = self.request_args['limit'][0]
         except KeyError:
             # Otherwise, limit is None and we'll use default_request_size
             limit = 0
@@ -130,7 +130,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         links = api.build_links(
             request_link=self.request_link,
             page=page,
-            limit=limit,
+            request_size=request_size,
             request_args=self.request_args,
         )
         meta = api.build_meta()
