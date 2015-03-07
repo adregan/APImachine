@@ -1,7 +1,9 @@
 import tornado.web
 import tornado.escape
 from src.json_api_utils import JSONAPI
+import config.meta as meta
 
+api = JSONAPI(copyright=meta.copyright, authors=meta.authors)
 
 class DefaultHandler(tornado.web.RequestHandler):
 
@@ -20,18 +22,24 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header('Content-Type', 'application/json')
 
     def write_error(self, status_code, **kwargs):
-        api = JSONAPI(count=0, total_entries=0)
         meta = api.build_meta()
 
-        message = kwargs.get('message', 'There was an error')
+        default_error = {
+            'title': 'Error',
+            'detail': 'There was an error',
+            'status': status_code
+        }
+        message = kwargs.get('message', default_error)
 
         if status_code == 405:
-            message = (
-                'The method {method} is not allowed for {path}'
-                .format(method=self.request.method, path=self.request.uri)
-            )
-        elif status_code == 404:
-            message = 'Resource not found.'
+            message = {
+                'title': 'Method is not allowed',
+                'detail': (
+                    'The method {method} is not allowed for {path}'
+                    .format(method=self.request.method, path=self.request.uri)
+                ),
+                'status': 405
+            }
 
         # Set the status code
         self.set_status(status_code)
@@ -68,8 +76,6 @@ class DefaultHandler(tornado.web.RequestHandler):
 
     def get(self, entry_id=None):
         # Sets an errors list to collect errors
-        errors = []
-
         try:
             # If there is a page declared in the args, pop it into page
             page = self.request_args.pop('page')[0]
@@ -91,13 +97,24 @@ class DefaultHandler(tornado.web.RequestHandler):
         try:
             page = int(page)
         except ValueError as error:
-            page = 1
-            errors.append('The page query must be an `integer`')
+            message = {
+                'title': 'Incorrect argument type',
+                'detail': 'The page query must be an `integer`',
+                'status': 400
+            }
+            self.write_error(400, message=message)
+            return
         try:
             limit = int(limit)
         except ValueError as error:
-            limit = 0
-            errors.append('The limit query must be an `integer`')
+            message = {
+                'title': 'Incorrect argument type',
+                'detail': 'The limit query must be an `integer`',
+                'status': 400
+            }
+            self.write_error(400, message=message)
+            return
+
 
         # If this is a GET request for a single resource
         if entry_id:
@@ -105,7 +122,15 @@ class DefaultHandler(tornado.web.RequestHandler):
             existing = self._get_existing(entry_id)
             # If there isn't an existing resource, return a 404
             if not existing:
-                self.write_error(404, message='Resource not found.')
+                message = {
+                    'title': 'Resource not found',
+                    'detail': (
+                        'The resource {entry} does not exist for the collection {collection}.'
+                        .format(entry=entry_id, collection=self.collection)
+                    ),
+                    'status': 404
+                }
+                self.write_error(404, message=message)
                 return
             # TODO: Convert existing to whatever the data var will be
 
@@ -123,7 +148,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # DEV
 
         # Instantiate the JSON API utility
-        api = JSONAPI(count=count, total_entries=total_entries)
+        api.update_count_total(count=count, total_entries=total_entries)
 
         links = api.build_links(
             request_link=self.request_link,
@@ -134,8 +159,6 @@ class DefaultHandler(tornado.web.RequestHandler):
         meta = api.build_meta()
 
         response = {'links': links, 'data': [], 'meta': meta}
-        if errors:
-            response['errors'] = errors
 
         self.write(response)
         self.set_status(200)
@@ -172,7 +195,15 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            self.write_error(404)
+            message = {
+                'title': 'Resource not found',
+                'detail': (
+                    'The resource {entry} does not exist for the collection {collection}.'
+                    .format(entry=entry_id, collection=self.collection)
+                ),
+                'status': 404
+            }
+            self.write_error(404, message=message)
             return
 
         err, body = self._decode_body()
@@ -202,7 +233,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         data, errors = self.schema().dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
-            self.write_error(404, message=errors)
+            self.write_error(400, message=errors)
             return
 
         # Update the database with the entry
@@ -218,7 +249,15 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            self.write_error(404)
+            message = {
+                'title': 'Resource not found',
+                'detail': (
+                    'The resource {entry} does not exist for the collection {collection}.'
+                    .format(entry=entry_id, collection=self.collection)
+                ),
+                'status': 404
+            }
+            self.write_error(404, message=message)
             return
 
         # Clears the Content-Type header. Only displaying status code
@@ -251,7 +290,11 @@ class DefaultHandler(tornado.web.RequestHandler):
         if not self.request.body:
             err = {
                 'code': 400,
-                'message': 'JSON body is missing'
+                'message': {
+                    'title': 'JSON body is missing',
+                    'detail': 'You must include a JSON body.',
+                    'status': 400
+                }
             }
         # The request body exists, try to decode it
         else:
@@ -261,10 +304,14 @@ class DefaultHandler(tornado.web.RequestHandler):
             except ValueError as error:
                 err = {
                     'code': 400,
-                    'message': (
-                        'There is a problem with your JSON formatting: {error}'
-                        .format(error=error)
-                    )
+                    'message': {
+                        'title': 'Poorly formatted JSON',
+                        'detail': (
+                            'There is a problem with your JSON formatting: {error}'
+                            .format(error=error)
+                        ),
+                        'status': 400
+                    }
                 }
         # Return the err and/or the decoded body (one will be None)
         return err, body
