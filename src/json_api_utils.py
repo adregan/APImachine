@@ -34,8 +34,20 @@ class JSONAPI(object):
         # If there is a limit defined, add that to the query string
         # If there is a page defined, add that to the query string
         # Declares a first_page_link and prev_page_link as well
-        first_page_link = prev_page_link = None
+        self_link = first_page_link = prev_page_link = None
         if page > 1:
+            # Constructs the self link
+            if query_string:
+                self_link = '{link}?{queries}&page={page}'.format(
+                    link=request_link,
+                    queries=query_string,
+                    page=page
+                )
+            else:
+                self_link = '{link}?page={page}'.format(
+                    link=request_link,
+                    page=page
+                )
             # Constructs the first_page_link (removes the page query)
             first_page_link = '{link}?{queries}'.format(
                 link=request_link,
@@ -47,31 +59,29 @@ class JSONAPI(object):
                 queries=query_string,
                 page=page-1
             )
-            # Sets the query string used by self
-            query_string += '&page={page}'.format(page=page)
+
 
         last_page_link = next_page_link = None
         if self.total_entries > request_size:
-            next_page_link = '{link}?{queries}&page={page}'.format(
-                link=request_link,
-                queries=query_string,
-                page=page+1
-            )
             last_page = floor((self.total_entries / request_size) + 1)
-            last_page_link = '{link}?{queries}&page={page}'.format(
-                link=request_link,
-                queries=query_string,
-                page=last_page
-            )
+            if page != last_page and not (page > last_page):
+                last_page_link = '{link}?{queries}&page={page}'.format(
+                    link=request_link,
+                    queries=query_string,
+                    page=last_page
+                )
+                next_page_link = '{link}?{queries}&page={page}'.format(
+                    link=request_link,
+                    queries=query_string,
+                    page=page+1
+                )
+
 
         # Creates an ordered dict for the links
         links = OrderedDict()
         # If there is a query string, set the self link with it
-        if query_string:
-            links['self'] = '{link}?{queries}'.format(
-                link=request_link,
-                queries=query_string
-            )
+        if self_link:
+            links['self'] = self_link
         # Otherwise, self link is the request link
         else:
             links['self'] = request_link
