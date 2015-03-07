@@ -45,13 +45,13 @@ class JSONAPI(object):
             query_string += '&page={page}'.format(page=page)
 
         last_page_link = next_page_link = None
-        if self.total_entries > self.count:
+        if self.total_entries > request_size:
             next_page_link = '{link}?{queries}&page={page}'.format(
                 link=request_link,
                 queries=query_string,
                 page=page+1
             )
-            last_page = floor((self.total_entries / self.count) + 1)
+            last_page = floor((self.total_entries / request_size) + 1)
             last_page_link = '{link}?{queries}&page={page}'.format(
                 link=request_link,
                 queries=query_string,
