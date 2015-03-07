@@ -39,6 +39,19 @@ class DefaultHandler(tornado.web.RequestHandler):
         return
 
     def prepare(self):
+        # Grab the full uri and split on args `?`
+        path_and_args = self.request.uri.split('?')
+        # Keep the path separately
+        path = path_and_args.pop(0)
+        # Keep the query args in a dictionary if they exist
+        args = dict([
+            # query_arguments returns byte strings. Decode to utf-8.
+            # Also, the value array needs to be split on any commas.
+            (key, [value.decode('utf-8') for value in values][0].split(','))
+            # We get the arguments from the self.request.query_arguments
+            for key, values in self.request.query_arguments.items()
+        ])
+
         # Set a copy of the request link
         self.request_link = '{protocol}://{host}{path}'.format(
             protocol=self.request.protocol,
