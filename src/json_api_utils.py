@@ -159,10 +159,10 @@ class JSONAPI(object):
             status = 500
 
         # Uses an ordered dict for nicer formatting
-        error = OrderedDict()
+        error = {}
         error['title'] = title
-        error['detail'] = detail
         error['status'] = str(status)
+        error['detail'] = detail
         if code:
             error['code'] = code
         if paths:
