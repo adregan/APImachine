@@ -158,7 +158,6 @@ class JSONAPI(object):
         except (TypeError, ValueError):
             status = 500
 
-        # Uses an ordered dict for nicer formatting
         error = {}
         error['title'] = title
         error['status'] = str(status)
