@@ -89,7 +89,9 @@ class DefaultHandler(tornado.web.RequestHandler):
             # If there is a limit, pop the value into limit
             limit = self.request_args['limit'][0]
         except KeyError:
-            # Otherwise, limit is None and we'll use default_request_size
+            # Otherwise, limit is 0. Not None, because we try to check 
+            # the type later and offer feedback and zero works as a truthy
+            # when we check against default_request_size
             limit = 0
 
         # Performs some type checking / coercion on page and limit
