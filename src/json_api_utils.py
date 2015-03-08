@@ -7,6 +7,7 @@ from math import floor
 
 
 class JSONAPI(object):
+
     def __init__(self, copyright=None, authors=None):
         self.copyright = copyright
         self.authors = authors
@@ -54,7 +55,7 @@ class JSONAPI(object):
                 prev_page_link = '{link}?{queries}&page={page}'.format(
                     link=request_link,
                     queries=query_string,
-                    page=page-1
+                    page=page - 1
                 )
             # Otherwise, just attach append the page query
             else:
@@ -67,7 +68,7 @@ class JSONAPI(object):
                 # Constructs the prev_page_link (subtracts 1 from the page)
                 prev_page_link = '{link}?page={page}'.format(
                     link=request_link,
-                    page=page-1
+                    page=page - 1
                 )
 
         # Works on constructing the last page and the next page
@@ -76,7 +77,8 @@ class JSONAPI(object):
             last_page = floor((self.total_entries / request_size) + 1)
             # Restricts last and next when you are on the last page
             if page != last_page and not (page > last_page):
-                # If there is a query string, attach it to the links, append page
+                # If there is a query string, attach it to the links
+                # and append the page
                 if query_string:
                     last_page_link = '{link}?{queries}&page={page}'.format(
                         link=request_link,
@@ -87,7 +89,7 @@ class JSONAPI(object):
                     next_page_link = '{link}?{queries}&page={page}'.format(
                         link=request_link,
                         queries=query_string,
-                        page=page+1
+                        page=page + 1
                     )
                 else:
                     last_page_link = '{link}?page={page}'.format(
@@ -97,7 +99,7 @@ class JSONAPI(object):
                     # Next is this page + 1
                     next_page_link = '{link}?page={page}'.format(
                         link=request_link,
-                        page=page+1
+                        page=page + 1
                     )
 
         # Creates an ordered dict for the links
