@@ -21,15 +21,17 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_header('Access-Control-Allow-Headers', 'Content-Type')
         self.set_header('Content-Type', 'application/json')
 
-    def write_error(self, status_code, **kwargs):
+    def write_error(self, err):
         meta = api.build_meta()
+
+        status_code = err.get('status_code', 500)
 
         default_error = {
             'title': 'Error',
             'detail': 'There was an error',
             'status': status_code
         }
-        message = kwargs.get('message', default_error)
+        message = err.get('message', default_error)
 
         if status_code == 405:
             message = {
@@ -166,7 +168,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         err, body = self._decode_body()
         # Handle the error, if found
         if err:
-            self.write_error(err.get('code'), message=err.get('message'))
+            self.write_error(err)
             return
         # Model the data, returns an model object
         modeled = self.model(body)
@@ -285,31 +287,26 @@ class DefaultHandler(tornado.web.RequestHandler):
         err = body = None
         # Check if the request body exists, return 400 if it doesn't
         if not self.request.body:
-            err = {
-                'code': 400,
-                'message': {
-                    'title': 'JSON body is missing',
-                    'detail': 'You must include a JSON body.',
-                    'status': 400
-                }
-            }
+            err = api.build_errors(
+                title='JSON error',
+                status=400,
+                detail='JSON body is missing. You must include a JSON body.'
+            )
         # The request body exists, try to decode it
         else:
             try:
                 body = tornado.escape.json_decode(self.request.body)
             # If the request body cannot be decoded, return a 400 error
             except ValueError as error:
-                err = {
-                    'code': 400,
-                    'message': {
-                        'title': 'Poorly formatted JSON',
-                        'detail': (
-                            'There is a problem with your JSON formatting: {error}'
-                            .format(error=error)
-                        ),
-                        'status': 400
-                    }
-                }
+                err = api.build_errors(
+                    title='JSON error',
+                    status=400,
+                    detail=(
+                        'There is a problem with your JSON formatting: {error}'
+                        .format(error=error)
+                    )
+                )
+
         # Return the err and/or the decoded body (one will be None)
         return err, body
 

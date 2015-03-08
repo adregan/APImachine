@@ -140,6 +140,42 @@ class JSONAPI(object):
 
         return meta
 
+    def build_errors(
+        self,
+        status,
+        title,
+        detail,
+        err_id=None,
+        href=None,
+        code=None,
+        links=None,
+        paths=None
+    ):
+        # Ensure that status is an int
+        try:
+            status = int(status)
+        # Any problems should return a 500 as this is a problem.
+        except (TypeError, ValueError):
+            status = 500
+
+        # Uses an ordered dict for nicer formatting
+        error = {}
+        error['title'] = title
+        error['status'] = str(status)
+        error['detail'] = detail
+        if code:
+            error['code'] = code
+        if paths:
+            error['paths'] = paths
+        if links:
+            error['links'] = links
+        if href:
+            error['href'] = href
+        if err_id:
+            error['err_id'] = err_id
+
+        return {'status_code': status, 'message': error}
+
     def _clear_count_total(self):
         self.count = None
         self.total_entries = None
