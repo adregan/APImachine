@@ -5,6 +5,7 @@ import config.meta as meta
 
 api = JSONAPI(copyright=meta.copyright, authors=meta.authors)
 
+
 class DefaultHandler(tornado.web.RequestHandler):
 
     def initialize(self, collection, schema, methods, model):
@@ -96,24 +97,23 @@ class DefaultHandler(tornado.web.RequestHandler):
         try:
             page = int(page)
         except ValueError as error:
-            message = {
-                'title': 'Incorrect argument type',
-                'detail': 'The page query must be an `integer`',
-                'status': 400
-            }
-            self.write_error(400, message=message)
+            err = api.build_errors(
+                title='Query error',
+                detail='Incorrect argument type. The page query must be an `integer`.',
+                status=400
+            )
+            self.write_error(err)
             return
         try:
             limit = int(limit)
         except ValueError as error:
-            message = {
-                'title': 'Incorrect argument type',
-                'detail': 'The limit query must be an `integer`',
-                'status': 400
-            }
-            self.write_error(400, message=message)
+            err = api.build_errors(
+                title='Query error',
+                detail='Incorrect argument type. The limit query must be an `integer`.',
+                status=400
+            )
+            self.write_error(err)
             return
-
 
         # If this is a GET request for a single resource
         if entry_id:
@@ -121,15 +121,15 @@ class DefaultHandler(tornado.web.RequestHandler):
             existing = self._get_existing(entry_id)
             # If there isn't an existing resource, return a 404
             if not existing:
-                message = {
-                    'title': 'Resource not found',
-                    'detail': (
+                err = api.build_errors(
+                    title='Resource not found',
+                    detail=(
                         'The resource {entry} does not exist for the collection {collection}.'
                         .format(entry=entry_id, collection=self.collection)
                     ),
-                    'status': 404
-                }
-                self.write_error(404, message=message)
+                    status=404
+                )
+                self.write_error(err)
                 return
             # TODO: Convert existing to whatever the data var will be
 
@@ -177,7 +177,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         data, errors = self.schema().dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
-            self.write_error(400, message=errors)
+            # TODO: MAKE A REAL ERROR MESSAGE
+            self.write_error({'status_code': 400, 'message': errors})
             return
 
         # Insert the entry into the database
@@ -194,20 +195,20 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            message = {
-                'title': 'Resource not found',
-                'detail': (
+            err = api.build_errors(
+                title='Resource not found',
+                detail=(
                     'The resource {entry} does not exist for the collection {collection}.'
                     .format(entry=entry_id, collection=self.collection)
                 ),
-                'status': 404
-            }
-            self.write_error(404, message=message)
+                status=404
+            )
+            self.write_error(err)
             return
 
         err, body = self._decode_body()
         if err:
-            self.write_error(err.get('code'), message=err.get('message'))
+            self.write_error(err)
             return
 
         self.set_status(200)
@@ -222,7 +223,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         err, body = self._decode_body()
         if err:
-            self.write_error(err.get('code'), message=err.get('message'))
+            self.write_error(err)
             return
 
         # Model the data, returns an model object
@@ -232,7 +233,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         data, errors = self.schema().dump(modeled)
         # If there were any errors from the schema, return a 400 and the errors
         if errors:
-            self.write_error(400, message=errors)
+            # TODO: MAKE A REAL ERROR MESSAGE
+            self.write_error({'status_code': 400, 'message': errors})
             return
 
         # Update the database with the entry
@@ -248,15 +250,15 @@ class DefaultHandler(tornado.web.RequestHandler):
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
         if not existing:
-            message = {
-                'title': 'Resource not found',
-                'detail': (
+            err = api.build_errors(
+                title='Resource not found',
+                detail=(
                     'The resource {entry} does not exist for the collection {collection}.'
                     .format(entry=entry_id, collection=self.collection)
                 ),
-                'status': 404
-            }
-            self.write_error(404, message=message)
+                status=404
+            )
+            self.write_error(err)
             return
 
         # Clears the Content-Type header. Only displaying status code
