@@ -10,22 +10,23 @@ class Patchy(object):
 
     def validate(self):
         key_errors = self._validate_patch_keys()
-        print(key_errors)
+        if key_errors:
+            return {'message': key_errors}
         return None
 
     def _validate_patch_keys(self):
         op_errors = [
-            {'index': i + 1, 'error': 'missing key `op`'}
+            {'index': i + 1, 'error': 'Missing key `op`'}
             for i, request in enumerate(self.patch_requests)
             if 'op' not in request.keys()
         ]
         path_errors = [
-            {'index': i + 1, 'error': 'missing key `path`'}
+            {'index': i + 1, 'error': 'Missing key `path`'}
             for i, request in enumerate(self.patch_requests)
             if 'path' not in request.keys()
         ]
         value_errors = [
-            {'index': i + 1, 'error': 'missing key `value`'}
+            {'index': i + 1, 'error': 'Missing key `value`'}
             for i, request in enumerate(self.patch_requests)
             if 'value' not in request.keys()
         ]
