@@ -36,3 +36,15 @@ class Patchy(object):
 
         return key_errors
 
+    def _build_error_messages(self, errors):
+        def err_output(err):
+            output = (
+                '{error} in patch request {index} of {length}'
+                .format(
+                    error=err.get('error'),
+                    index=err.get('index'),
+                    length=len(self.patch_requests))
+            )
+            return output
+
+        return [err_output(err) for err in errors]
