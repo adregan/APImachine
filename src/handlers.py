@@ -149,7 +149,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         # DEV
 
         # Instantiate the JSON API utility
-        api.update_count_total(count=count, total_entries=total_entries)
+        if not entry_id:
+            api.update_count_total(count=count, total_entries=total_entries)
 
         links = api.build_links(
             request_link=self.request_link,
