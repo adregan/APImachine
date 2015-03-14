@@ -22,5 +22,15 @@ endpoints = [
         "schema": TestSchema,
         "methods": ("GET", "OPTIONS", "POST"),
         "model": TestModel
+    },
+    {
+        "route": r"/tests/([\w]+)/?$",
+        "handler": DefaultHandler,
+        "name": "tests/:id",
+        "collection": "tests",
+        "schema": TestSchema,
+        "methods": ("GET", "OPTIONS", "PATCH", "PUT", "DELETE"),
+        "model": TestModel
     }
+
 ]
