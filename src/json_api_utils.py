@@ -37,19 +37,6 @@ class JSONAPI(object):
         # Declares a first_page_link and prev_page_link as well
         self_link = first_page_link = prev_page_link = None
 
-        # If there isn't a count or total, return only the self link
-        # with or without the query string
-        if not self.count or not self.total_entries:
-            if query_string:
-                return {
-                    'self': (
-                        '{link}?{queries}'
-                        .format(link=request_link, queries=query_string)
-                    )
-                }
-            else:
-                return {'self': request_link}
-
         # Constructs these links when the page is greater than 1
         if page > 1:
             # If there is a query string, attach it to the links, append page
