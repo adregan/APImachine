@@ -44,6 +44,20 @@ class Patchy(object):
 
         return key_errors
 
+    def _validate_ops(self):
+        illegal_ops = [
+            {
+                'index': i + 1,
+                'error': 'Unsupported op `{op}`'.format(op=request.get('op'))
+            }
+            for i, request in enumerate(self.patch_requests)
+            if request.get('op') not in self.supported_ops
+        ]
+
+        op_errors = self._build_error_messages(illegal_ops)
+
+        return op_errors
+
     def _build_error_messages(self, errors):
         def err_output(err):
             output = (
