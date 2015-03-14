@@ -2,6 +2,7 @@ import tornado.web
 import tornado.escape
 from src.json_api_utils import JSONAPI
 import config.meta as meta
+from src.patch_util import Patchy
 
 api = JSONAPI(copyright=meta.copyright, authors=meta.authors)
 
@@ -214,6 +215,20 @@ class DefaultHandler(tornado.web.RequestHandler):
             self.write_error(err)
             return
 
+        patchy = Patchy(body)
+
+        err = patchy.validate()
+
+        if err:
+            self.write_error(
+                api.build_errors(
+                    status=400,
+                    title='Patch Error',
+                    detail=err.get('message')
+                )
+            )
+
+        self.write({'yo': 'yp'})
         self.set_status(200)
         return
 
