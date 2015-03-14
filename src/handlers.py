@@ -227,6 +227,7 @@ class DefaultHandler(tornado.web.RequestHandler):
                     detail=err.get('message')
                 )
             )
+            return
 
         self.write({'yo': 'yp'})
         self.set_status(200)
