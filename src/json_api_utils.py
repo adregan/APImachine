@@ -11,8 +11,8 @@ class JSONAPI(object):
     def __init__(self, copyright=None, authors=None):
         self.copyright = copyright
         self.authors = authors
-        self.count = None
-        self.total_entries = None
+        self.count = 0
+        self.total_entries = 0
 
     def update_count_total(self, count, total_entries):
         self.count = count
