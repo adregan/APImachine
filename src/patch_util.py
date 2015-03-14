@@ -2,16 +2,23 @@
 '''
 
 class Patchy(object):
-    def __init__(self, patch_requests):
+    def __init__(self, patch_requests, supported_ops=None):
         self.patch_requests = patch_requests
         # Turns patch_requests into a list if they aren't already
         if not isinstance(self.patch_requests, (list)):
             self.patch_requests = [self.patch_requests]
+        if not supported_ops:
+            self.supported_ops = ['replace', 'add', 'remove']
+        else:
+            self.support_ops = supported_ops
 
     def validate(self):
         key_errors = self._validate_patch_keys()
         if key_errors:
             return {'message': key_errors}
+        op_errors = self._validate_ops()
+        if op_errors:
+            return {'message': op_errors}
         return None
 
     def _validate_patch_keys(self):
