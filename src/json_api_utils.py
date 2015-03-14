@@ -190,5 +190,4 @@ class JSONAPI(object):
         return {'status_code': status, 'message': error}
 
     def _clear_count_total(self):
-        self.count = None
-        self.total_entries = None
+        self.count = self.total_entries = None
