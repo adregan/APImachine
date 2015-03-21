@@ -18,23 +18,22 @@ class App(Application):
 
         Application.__init__(self, handlers, **settings)
 
-        # dsn = (
-        #     'dbname={database} host={host} port={port} '
-        #     'user={user} password={pw}'
-        #     .format(
-        #         database=options.database_name,
-        #         host=options.database_host,
-        #         port=options.database_port
-        #         user=options.database_user,
-        #         pw=options.database_password,
-        #     )
+        dsn = (
+            'dbname={database} host={host} port={port} '
+            'user={user} password={pw}'
+            .format(
+                database=options.database_name,
+                host=options.database_host,
+                port=options.database_port,
+                user=options.database_user,
+                pw=options.database_password
+            )
+        )
 
-        # )
-
-        # self.db = momoko.Pool(
-        #     dsn=dsn
-        #     size=1
-        # )
+        self.db = momoko.Pool(
+            dsn=dsn,
+            size=1
+        )
 
     def _build_handlers(self):
         handlers = [self._build_url(endpoint) for endpoint in self.endpoints]
