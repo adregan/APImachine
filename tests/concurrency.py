@@ -1,16 +1,15 @@
-''' Tests the concurrency of the requests to make sure we aren't doing anything blocking
-'''
 
 import click
 import requests
+import time
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
+
 @click.group()
 def cli():
-    ''' An upload tool to test media uploads. Encodes your images, just tell it where to find them
-    \b
-        media_upload.py post URL -t dropbox_token -f file_path
+    ''' Tests the concurrency of the requests to make sure
+        we aren't doing anything blocking
     '''
     pass
 
@@ -19,6 +18,7 @@ def cli():
 @click.argument('url', metavar='URL', required=True)
 @click.option('--number', default=10, help='The number of requests to make.')
 def get(url, number):
+    start = time.time()
     urls = [url for i in range(0, number)]
     pool = ThreadPool(number)
     # Map over the media
@@ -27,15 +27,20 @@ def get(url, number):
     pool.close()
     pool.join()
 
-    for time in response_times:
-        print(time)
+    for resp_time in response_times:
+        print(resp_time)
+
+    total_seconds = int(time.time() - start)
+    seconds = total_seconds % 60
+
+    print('TOTAL time {seconds} sec'.format(seconds=seconds))
 
     return
+
 
 def get_request(url):
     resp = requests.get(url)
     return resp.elapsed
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
     cli()
