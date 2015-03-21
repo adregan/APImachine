@@ -76,3 +76,7 @@ class Patchy(object):
             return output
 
         return [err_output(err) for err in errors]
+
+    def clean(self):
+        self.patch_requests = []
+
