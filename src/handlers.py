@@ -114,7 +114,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         except ValueError as error:
             err = api.build_errors(
                 title='Query error',
-                detail='Incorrect argument type. The page query must be an `integer`.',
+                detail='Incorrect argument type. The page query '
+                'must be an `integer`.',
                 status=400
             )
             self.write_error(err)
@@ -124,7 +125,8 @@ class DefaultHandler(tornado.web.RequestHandler):
         except ValueError as error:
             err = api.build_errors(
                 title='Query error',
-                detail='Incorrect argument type. The limit query must be an `integer`.',
+                detail='Incorrect argument type. The limit query '
+                'must be an `integer`.',
                 status=400
             )
             self.write_error(err)
@@ -139,7 +141,8 @@ class DefaultHandler(tornado.web.RequestHandler):
                 err = api.build_errors(
                     title='Resource not found',
                     detail=(
-                        'The resource {entry} does not exist for the collection {collection}.'
+                        'The resource {entry} does not exist for '
+                        'the collection {collection}.'
                         .format(entry=entry_id, collection=self.collection)
                     ),
                     status=404
@@ -175,7 +178,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         response = {'links': links, 'data': [], 'meta': meta}
 
-        # TESTING CONCURRENCY 
+        # TESTING CONCURRENCY
         import random
         yield gen.sleep(random.randint(0, 5))
 
@@ -206,7 +209,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         # TODO: Write the database utility
         # database.insert(self.collection, data)
 
-        # TESTING CONCURRENCY 
+        # TESTING CONCURRENCY
         import random
         yield gen.sleep(random.randint(0, 5))
 
@@ -223,7 +226,8 @@ class DefaultHandler(tornado.web.RequestHandler):
             err = api.build_errors(
                 title='Resource not found',
                 detail=(
-                    'The resource {entry} does not exist for the collection {collection}.'
+                    'The resource {entry} does not exist for the '
+                    'collection {collection}.'
                     .format(entry=entry_id, collection=self.collection)
                 ),
                 status=404
@@ -289,11 +293,12 @@ class DefaultHandler(tornado.web.RequestHandler):
         # TODO: Check for existing entry_id
         existing = self._get_existing(entry_id)
         # If the resource doesn't exist, raise a 404
-        if not existing:
+        if existing:
             err = api.build_errors(
                 title='Resource not found',
                 detail=(
-                    'The resource {entry} does not exist for the collection {collection}.'
+                    'The resource {entry} does not exist for the '
+                    'collection {collection}.'
                     .format(entry=entry_id, collection=self.collection)
                 ),
                 status=404
