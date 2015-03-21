@@ -171,6 +171,10 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         response = {'links': links, 'data': [], 'meta': meta}
 
+        # TESTING CONCURRENCY 
+        import random
+        yield gen.sleep(random.randint(0, 5))
+
         self.write(response)
         self.set_status(200)
         return
