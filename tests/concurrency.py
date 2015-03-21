@@ -6,11 +6,19 @@ import requests
 from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 
-@click.command()
-@click.option('--url', default=None, help='The url to request.')
-@click.option('--number', default=10, help='The number of requests to make.')
+@click.group()
+def cli():
+    ''' An upload tool to test media uploads. Encodes your images, just tell it where to find them
+    \b
+        media_upload.py post URL -t dropbox_token -f file_path
+    '''
+    pass
 
-def test(url, number):
+
+@cli.command()
+@click.argument('url', metavar='URL', required=True)
+@click.option('--number', default=10, help='The number of requests to make.')
+def get(url, number):
     urls = [url for i in range(0, number)]
     pool = ThreadPool(number)
     # Map over the media
@@ -22,9 +30,12 @@ def test(url, number):
     for time in response_times:
         print(time)
 
+    return
+
 def get_request(url):
     resp = requests.get(url)
     return resp.elapsed
 
-if __name__ == '__main__':
-    test()
+
+if __name__=='__main__':
+    cli()
