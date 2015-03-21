@@ -13,7 +13,7 @@ define('database_name', default=None, help='The database name', type=str)
 define('database_user', default=None, help='The database user', type=str)
 define('database_password', default=None, help='The database password', type=str)
 define('database_host', default=None, help='The database host', type=str)
-define('database_port', default=None, help='The database port', type=str)
+define('database_port', default=None, help='The database port', type=int)
 define('default_request_size', default=10, help='The default request size', type=int)
 
 
