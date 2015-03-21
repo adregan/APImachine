@@ -179,6 +179,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         self.set_status(200)
         return
 
+    @gen.coroutine
     def post(self):
         # Decode the JSON body
         err, body = self._decode_body()
@@ -200,6 +201,10 @@ class DefaultHandler(tornado.web.RequestHandler):
         # Insert the entry into the database
         # TODO: Write the database utility
         # database.insert(self.collection, data)
+
+        # TESTING CONCURRENCY 
+        import random
+        yield gen.sleep(random.randint(0, 5))
 
         # Set the status to 201
         self.write(data)
