@@ -5,6 +5,7 @@ import config.meta as meta
 from src.patch_util import Patchy
 
 api = JSONAPI(copyright=meta.copyright, authors=meta.authors)
+patchy = Patchy()
 
 
 class DefaultHandler(tornado.web.RequestHandler):
@@ -80,6 +81,7 @@ class DefaultHandler(tornado.web.RequestHandler):
 
     def on_finish(self):
         api.clean()
+        patchy.clean()
         return
 
     def get(self, entry_id=None):
@@ -219,7 +221,7 @@ class DefaultHandler(tornado.web.RequestHandler):
             self.write_error(err)
             return
 
-        patchy = Patchy(body)
+        patchy.load(body)
 
         err = patchy.validate()
 
