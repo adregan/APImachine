@@ -78,6 +78,10 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         return
 
+    def on_finish(self):
+        api.clean()
+        return
+
     def get(self, entry_id=None):
         # Sets an errors list to collect errors
         try:

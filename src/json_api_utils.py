@@ -137,8 +137,6 @@ class JSONAPI(object):
         if self.authors:
             meta['authors'] = self.authors
 
-        self._clear_count_total()
-
         return meta
 
     def build_errors(
@@ -176,5 +174,5 @@ class JSONAPI(object):
 
         return {'status_code': status, 'message': error}
 
-    def _clear_count_total(self):
+    def clean(self):
         self.count = self.total_entries = 0
