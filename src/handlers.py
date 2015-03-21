@@ -1,5 +1,6 @@
 import tornado.web
 import tornado.escape
+import tornado.gen as gen
 from src.json_api_utils import JSONAPI
 import config.meta as meta
 from src.patch_util import Patchy
@@ -84,6 +85,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         patchy.clean()
         return
 
+    @gen.coroutine
     def get(self, entry_id=None):
         # Sets an errors list to collect errors
         try:
