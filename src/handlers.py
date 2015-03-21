@@ -11,6 +11,10 @@ patchy = Patchy()
 
 class DefaultHandler(tornado.web.RequestHandler):
 
+    @property
+    def db(self):
+        return self.application.db
+
     def initialize(self, collection, schema, methods, model):
         self.collection = collection
         self.schema = schema
