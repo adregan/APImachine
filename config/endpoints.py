@@ -21,7 +21,8 @@ endpoints = [
         "collection": "tests",
         "schema": TestSchema,
         "methods": ("GET", "OPTIONS", "POST"),
-        "model": TestModel
+        "model": TestModel,
+        "table": "test"
     },
     {
         "route": r"/tests/([\w]+)/?$",
@@ -30,7 +31,8 @@ endpoints = [
         "collection": "tests",
         "schema": TestSchema,
         "methods": ("GET", "OPTIONS", "PATCH", "PUT", "DELETE"),
-        "model": TestModel
+        "model": TestModel,
+        "table": "test"
     }
 
 ]
