@@ -204,11 +204,11 @@ class DefaultHandler(tornado.web.RequestHandler):
         )
         meta = api.build_meta()
 
-        response = {'links': links, 'data': [], 'meta': meta}
+        response = {'links': links, 'data': data, 'meta': meta}
 
         # TESTING CONCURRENCY
-        import random
-        yield gen.sleep(random.randint(0, 5))
+        # import random
+        # yield gen.sleep(random.randint(0, 5))
 
         self.write(response)
         self.set_status(200)
