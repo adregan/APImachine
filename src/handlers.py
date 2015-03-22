@@ -4,6 +4,10 @@ import tornado.gen as gen
 from src.json_api_utils import JSONAPI
 import config.meta as meta
 from src.patch_util import Patchy
+from src.data_utils import convert_database_cursor, convert_to_json
+import psycopg2
+import momoko
+from psycopg2.extensions import AsIs
 
 api = JSONAPI(copyright=meta.copyright, authors=meta.authors)
 patchy = Patchy()
@@ -150,6 +154,29 @@ class DefaultHandler(tornado.web.RequestHandler):
                 self.write_error(err)
                 return
             # TODO: Convert existing to whatever the data var will be
+        else:
+            try:
+                cursor = yield momoko.Op(
+                    self.db.execute,
+                    'SELECT * FROM %(table)s',
+                    {'table': AsIs(self.table)}
+                )
+            except (psycopg2.Warning, psycopg2.Error) as error:
+                err = api.build_errors(
+                    title='Database Error',
+                    detail=str(error),
+                    status=500
+                )
+
+                self.write_error(err)
+                return
+            else:
+                cursor_objects = convert_database_cursor(cursor)
+                cursor.close()
+
+
+            data = convert_to_json(self.schema, cursor_objects)
+
 
         # Sets the request size to either the user defined limit
         # or the default in settings.
