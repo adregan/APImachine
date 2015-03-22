@@ -1,6 +1,5 @@
 from tornado.web import url, Application
 import os
-import psycopg2
 import momoko
 
 class App(Application):
@@ -48,7 +47,8 @@ class App(Application):
             'collection': endpoint.get('collection'),
             'schema': endpoint.get('schema'),
             'methods': endpoint.get('methods'),
-            'model': endpoint.get('model')
+            'model': endpoint.get('model'),
+            'table': endpoint.get('table')
         }
         route_url = url(route, handler, kwargs, name=name)
 
