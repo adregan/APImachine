@@ -4,9 +4,10 @@ from marshmallow import Schema, fields
 """
 
 class TestSchema(Schema):
+    id = fields.String()
     title = fields.String(default="Untitled")
     type = fields.Select(
         choices=["fruit", "vegetable", "meat"],
         default="fruit"
     )
-    modified = fields.LocalDateTime()
+    updateddate = fields.LocalDateTime()
