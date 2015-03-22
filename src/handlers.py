@@ -19,7 +19,7 @@ class DefaultHandler(tornado.web.RequestHandler):
     def db(self):
         return self.application.db
 
-    def initialize(self, collection, schema, methods, model):
+    def initialize(self, collection, schema, methods, model, table):
         self.collection = collection
         self.schema = schema
         if methods:
@@ -27,6 +27,7 @@ class DefaultHandler(tornado.web.RequestHandler):
         else:
             self.SUPPORTED_METHODS = ('GET')
         self.model = model
+        self.table = table
 
     def set_default_headers(self):
         self.set_header('Access-Control-Allow-Origin', '*')
