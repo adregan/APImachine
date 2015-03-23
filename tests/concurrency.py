@@ -18,9 +18,13 @@ def cli():
 @cli.command()
 @click.argument('url', metavar='URL', required=True)
 @click.option('--number', default=10, help='The number of requests to make.')
-def get(url, number):
+@click.option('--single', default=False, required=False, help='The type of request to make.')
+def get(url, number, single):
     start = time.time()
-    urls = [url for i in range(0, number)]
+    if single:
+        urls = ['{}/{}'.format(url, i) for i in range(0, number)]
+    else:
+        urls = [url for i in range(0, number)]
     pool = ThreadPool(number)
     # Map over the media
     response_times = pool.map(get_request, urls)
