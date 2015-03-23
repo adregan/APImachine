@@ -92,6 +92,12 @@ class DefaultHandler(tornado.web.RequestHandler):
     def on_finish(self):
         api.clean()
         patchy.clean()
+        del self.collection
+        del self.schema
+        del self.SUPPORTED_METHODS
+        del self.model
+        del self.table
+
         return
 
     @gen.coroutine
