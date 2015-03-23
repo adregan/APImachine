@@ -139,45 +139,51 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         # If this is a GET request for a single resource
         if entry_id:
-            # Check for existing
-            existing = self._get_existing(entry_id)
-            # If there isn't an existing resource, return a 404
-            if not existing:
-                err = api.build_errors(
-                    title='Resource not found',
-                    detail=(
-                        'The resource {entry} does not exist for '
-                        'the collection {collection}.'
-                        .format(entry=entry_id, collection=self.collection)
-                    ),
-                    status=404
-                )
-                self.write_error(err)
-                return
-            # TODO: Convert existing to whatever the data var will be
+            operation = 'SELECT * FROM %(table)s WHERE id = %(id)s'
+            parameters = {'table': AsIs(self.table), 'id': entry_id}
+
+            single = True
         else:
-            try:
-                cursor = yield momoko.Op(
-                    self.db.execute,
-                    'SELECT * FROM %(table)s',
-                    {'table': AsIs(self.table)}
-                )
-            except (psycopg2.Warning, psycopg2.Error) as error:
-                err = api.build_errors(
-                    title='Database Error',
-                    detail=str(error),
-                    status=500
-                )
+            operation = 'SELECT * FROM %(table)s'
+            parameters = {'table': AsIs(self.table)}
 
-                self.write_error(err)
-                return
-            else:
-                cursor_objects = convert_database_cursor(cursor)
-                cursor.close()
+            single = False
+
+        try:
+            cursor = yield momoko.Op(
+                self.db.execute,
+                operation,
+                parameters
+            )
+        except (psycopg2.Warning, psycopg2.Error) as error:
+            err = api.build_errors(
+                title='Database Error',
+                detail=str(error),
+                status=500
+            )
+
+            self.write_error(err)
+            return
+        else:
+            cursor_objects = convert_database_cursor(cursor, single=single)
+            cursor.close()
+
+        # If there isn't an existing resource, return a 404
+        if single and not cursor_objects:
+            err = api.build_errors(
+                title='Resource not found',
+                detail=(
+                    'The resource {entry} does not exist for '
+                    'the collection {collection}.'
+                    .format(entry=entry_id, collection=self.collection)
+                ),
+                status=404
+            )
+            self.write_error(err)
+            return
 
 
-            data = convert_to_json(self.schema, cursor_objects)
-
+        data = convert_to_json(self.schema, cursor_objects)
 
         # Sets the request size to either the user defined limit
         # or the default in settings.
