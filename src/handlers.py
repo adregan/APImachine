@@ -4,7 +4,7 @@ import tornado.gen as gen
 from src.json_api_utils import JSONAPI
 import config.meta as meta
 from src.patch_util import Patchy
-from src.data_utils import convert_database_cursor, convert_to_json
+from src.data_utils import convert_id
 import psycopg2
 import momoko
 from psycopg2.extensions import AsIs
@@ -145,12 +145,12 @@ class DefaultHandler(tornado.web.RequestHandler):
 
         # If this is a GET request for a single resource
         if entry_id:
-            operation = 'SELECT * FROM %(table)s WHERE id = %(id)s'
+            operation = 'SELECT to_json(array_agg(%(table)s)) FROM %(table)s WHERE id = %(id)s'
             parameters = {'table': AsIs(self.table), 'id': entry_id}
 
             single = True
         else:
-            operation = 'SELECT * FROM %(table)s'
+            operation = 'SELECT to_json(array_agg(%(table)s)) FROM %(table)s'
             parameters = {'table': AsIs(self.table)}
 
             single = False
@@ -159,7 +159,8 @@ class DefaultHandler(tornado.web.RequestHandler):
             cursor = yield momoko.Op(
                 self.db.execute,
                 operation,
-                parameters
+                parameters,
+                cursor_factory=psycopg2.extras.RealDictCursor
             )
         except (psycopg2.Warning, psycopg2.Error) as error:
             err = api.build_errors(
@@ -171,11 +172,14 @@ class DefaultHandler(tornado.web.RequestHandler):
             self.write_error(err)
             return
         else:
-            cursor_objects = convert_database_cursor(cursor, single=single)
+            if single:
+                results = cursor.fetchone().get('to_json')
+            else:
+                results = cursor.fetchall()[0].get('to_json')
             cursor.close()
 
         # If there isn't an existing resource, return a 404
-        if single and not cursor_objects:
+        if not results:
             err = api.build_errors(
                 title='Resource not found',
                 detail=(
@@ -187,20 +191,22 @@ class DefaultHandler(tornado.web.RequestHandler):
             )
             self.write_error(err)
             return
+        elif single:
+            data = convert_id(results[0])
+        else:
+            data = [convert_id(res) for res in results]
 
-
-        data = convert_to_json(self.schema, cursor_objects)
 
         # Sets the request size to either the user defined limit
         # or the default in settings.
         request_size = limit or self.settings.get('default_request_size')
 
         # TODO: return the total count from database
-        # count = len(data)
+        count = len(data)
         # total_entries = total
 
         # DEV
-        count = 10
+        # count = 10
         total_entries = 55
         # DEV
 
